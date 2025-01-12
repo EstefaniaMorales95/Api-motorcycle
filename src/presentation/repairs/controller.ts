@@ -15,12 +15,10 @@ export class MotorcyclesController {
 			const motorcycles = await this.motorcyclesService.getPendingRepairs();
 			return res.status(200).json(motorcycles);
 		} catch (error) {
-			return res
-				.status(500)
-				.json({
-					message: 'Error al obtener las reparaciones pendientes',
-					error,
-				});
+			return res.status(500).json({
+				message: 'Error al obtener las reparaciones pendientes',
+				error,
+			});
 		}
 	};
 
@@ -73,11 +71,9 @@ export class MotorcyclesController {
 		try {
 			const completedRepair = await this.motorcyclesService.completeRepair(id);
 			if (!completedRepair) {
-				return res
-					.status(404)
-					.json({
-						message: 'Moto no encontrada o no está pendiente para completar',
-					});
+				return res.status(404).json({
+					message: 'Moto no encontrada o no está pendiente para completar',
+				});
 			}
 			return res.status(200).json(completedRepair);
 		} catch (error) {
@@ -91,13 +87,11 @@ export class MotorcyclesController {
 	cancelRepair = async (req: Request, res: Response) => {
 		const { id } = req.params;
 		try {
-			const cancelledRepair = await this.motorcyclesService.cancelRepair(id); // Asegúrate de que el método retorna el objeto esperado
+			const cancelledRepair = await this.motorcyclesService.cancelRepair(id);
 			if (!cancelledRepair) {
-				return res
-					.status(404)
-					.json({
-						message: 'Moto no encontrada o no está pendiente para cancelar',
-					});
+				return res.status(404).json({
+					message: 'Moto no encontrada o no está pendiente para cancelar',
+				});
 			}
 			return res
 				.status(200)
