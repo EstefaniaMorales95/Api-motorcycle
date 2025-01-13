@@ -1,9 +1,17 @@
 import { Request, Response } from 'express';
 import { UsersService } from '../services/users.service';
-import { CreateUserDTO } from '../../domain';
+import { CreateUserDTO, CustomError } from '../../domain';
 
 export class UsersController {
 	constructor(private readonly userService: UsersService) {}
+
+	private handleError = (error: unknown, res: Response) => {
+		if (error instanceof CustomError) {
+			return res.status(error.statusCode).json({ message: error.message });
+		}
+		console.log(error);
+		return res.status(500).json({ message: 'Something went very wrong!💣' });
+	};
 
 	getAllUsers = async (req: Request, res: Response) => {};
 
@@ -15,11 +23,7 @@ export class UsersController {
 			.then((data) => {
 				res.status(200).json(data);
 			})
-			.catch((error: any) => {
-				res.status(500).json({
-					message: 'Internal Server Error',
-				});
-			});
+			.catch((error: unknown) => this.handleError(error, res));
 	};
 
 	createUser = async (req: Request, res: Response) => {
@@ -31,12 +35,7 @@ export class UsersController {
 			.then((data: any) => {
 				return res.status(201).json(data);
 			})
-			.catch((error: any) => {
-				return res.status(500).json({
-					message: 'Internal Server Error',
-					error,
-				});
-			});
+			.catch((error: unknown) => this.handleError(error, res));
 	};
 
 	updateUser = async (req: Request, res: Response) => {
@@ -48,12 +47,7 @@ export class UsersController {
 			.then((data) => {
 				return res.status(200).json(data);
 			})
-			.catch((error: any) => {
-				return res.status(500).json({
-					message: 'Internal Server Error',
-					error,
-				});
-			});
+			.catch((error: unknown) => this.handleError(error, res));
 	};
 
 	disableUser = async (req: Request, res: Response) => {

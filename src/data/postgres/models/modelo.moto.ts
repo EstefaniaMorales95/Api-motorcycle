@@ -23,9 +23,7 @@ export class motorcycle extends BaseEntity {
 		enum: ['pending', 'completed', 'cancelled'],
 		default: 'pending',
 	})
-	@Column('bool', {
-		default: true,
-	})
+	@Column({ default: true })
 	status: boolean;
 
 	@ManyToOne(() => User, (user) => user.motorcycles) // Asegúrate de tener esta relación

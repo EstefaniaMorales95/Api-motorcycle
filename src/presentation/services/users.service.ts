@@ -1,5 +1,6 @@
 import { PostgresDatabase, User, UserRole, UserStatus } from '../../data';
 import bcrypt from 'bcrypt';
+import { CustomError } from '../../domain';
 
 export class UsersService {
 	constructor() {}
@@ -8,7 +9,7 @@ export class UsersService {
 		try {
 			return await User.find();
 		} catch (error) {
-			throw new Error('Error finding a user by their id');
+			throw CustomError.notFoud('Error finding a user by their id');
 		}
 	}
 
@@ -20,7 +21,7 @@ export class UsersService {
 			},
 		});
 		if (!user) {
-			throw new Error('User not found'); // Mejor que 'Post not found', ya que se refiere a un usuario
+			throw CustomError.notFoud('User not found'); // Mejor que 'Post not found', ya que se refiere a un usuario
 		}
 
 		return user; // Devolver el usuario encontrado
@@ -37,7 +38,7 @@ export class UsersService {
 		try {
 			return await user.save();
 		} catch (error) {
-			throw new Error('Error creating user');
+			throw CustomError.badRequest('Error creating user');
 		}
 	}
 
@@ -46,7 +47,7 @@ export class UsersService {
 		const user = await User.findOne({ where: { id } });
 
 		if (!user) {
-			throw new Error(`User with ID ${id} not found`);
+			throw CustomError.badRequest(`User with ID ${id} not found`);
 		}
 
 		// Actualizar los campos del usuario
@@ -57,7 +58,7 @@ export class UsersService {
 			// Guardar los cambios en la base de datos
 			return await user.save();
 		} catch (error) {
-			throw new Error('Error updating user');
+			throw CustomError.unAuthorized('Error updating user');
 		}
 	}
 
@@ -67,7 +68,7 @@ export class UsersService {
 			const user = await this.findOne(id);
 
 			if (!id) {
-				throw new Error(`User with ID ${id} not found`);
+				throw CustomError.badRequest(`User with ID ${id} not found`);
 			}
 
 			// Deshabilitar al usuario
@@ -79,7 +80,7 @@ export class UsersService {
 			return { message: `User with ID ${id} has been disabled` };
 		} catch (error) {
 			// Manejo del error
-			throw new Error('Unknown error occurred');
+			throw CustomError.internalServer('Unknown error occurred');
 		}
 	}
 }
