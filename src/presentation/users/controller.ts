@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { UsersService } from '../services/users.service';
-import { CreateUserDTO, CustomError } from '../../domain';
+import { CustomError } from '../../domain';
 
 export class UsersController {
 	constructor(private readonly userService: UsersService) {}
@@ -13,9 +13,14 @@ export class UsersController {
 		return res.status(500).json({ message: 'Something went very wrong!💣' });
 	};
 
-	getAllUsers = async (req: Request, res: Response) => {};
+	findAllUsers = async (req: Request, res: Response) => {
+		this.userService
+			.findAllUsers()
+			.then((data) => res.status(200).json(data))
+			.catch((error: any) => this.handleError(error, res));
+	};
 
-	findOne = async (req: Request, res: Response) => {
+	findOneUser = async (req: Request, res: Response) => {
 		const { id } = req.params;
 
 		this.userService
@@ -23,15 +28,15 @@ export class UsersController {
 			.then((data) => {
 				res.status(200).json(data);
 			})
-			.catch((error: unknown) => this.handleError(error, res));
+			.catch((error: any) => this.handleError(error, res));
 	};
 
 	createUser = async (req: Request, res: Response) => {
-		const [error] = CreateUserDTO.create(req.body);
+		const [error, CreateUserDTO] = CreateUserDTO.create(req.body);
 
 		if (error) return res.status(422).json({ message: error });
 		this.userService
-			.createUser(req.body)
+			.createUser(CreateUserDTO)
 			.then((data: any) => {
 				return res.status(201).json(data);
 			})
@@ -40,7 +45,9 @@ export class UsersController {
 
 	updateUser = async (req: Request, res: Response) => {
 		const { id } = req.params;
-		const { name, lastname } = req.body;
+		const { error, updateUserDto } = updateUserDto(req.body);
+
+		if (error) return res.status(422).json({ message: error });
 
 		this.userService
 			.updateUser(id, name, lastname, req.body)

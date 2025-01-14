@@ -6,26 +6,21 @@ import { Server } from './presentation/server';
 import 'dotenv/config';
 
 async function main() {
-	try {
-		// Conectar a la base de datos
-		const database = new PostgresDatabase({
-			host: envs.DB_HOST,
-			port: envs.DB_PORT,
-			username: envs.DB_USERNAME,
-			password: envs.DB_PASSWORD,
-			database: envs.DB_DATABASE,
-		});
+	const postgres = new PostgresDatabase({
+		username: envs.DB_USERNAME,
+		password: envs.DB_PASSWORD,
+		host: envs.DB_HOST,
+		database: envs.DB_DATABASE,
+		port: envs.DB_PORT,
+	});
 
-		// Configurar y arrancar el servidor
-		const server = new Server({
-			port: envs.PORT,
-			routes: AppRoutes.routes,
-		});
-		await server.start();
-	} catch (error) {
-		console.error('Application failed to start:', error);
-		process.exit(1); // Finaliza el proceso en caso de error crítico
-	}
+	await postgres.connect();
+
+	const server = new Server({
+		port: envs.PORT,
+		routes: AppRoutes.routes,
+	});
+	await server.start();
 }
 
 main();

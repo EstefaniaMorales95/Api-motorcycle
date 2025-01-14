@@ -1,38 +1,26 @@
-import {
-	Entity,
-	PrimaryGeneratedColumn,
-	Column,
-	ManyToOne,
-	JoinColumn,
-	BaseEntity,
-} from 'typeorm';
-import { motorcycle } from './modelo.moto';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum RepairStatus {
-	PENDING = 'pending',
-	COMPLETED = 'completed',
-	CANCELLED = 'cancelled',
+	PENDING = 'PENDING',
+	COMPLETED = 'COPLETED',
+	CANCELLED = 'CANCELLED',
 }
-
 @Entity()
-export class Repair extends BaseEntity {
+export class Repair {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
 
-	@Column('timestamp', { nullable: false })
+	@Column('date', {
+		nullable: false,
+	})
 	date: Date;
-
-	@Column({
-		type: 'enum',
+	@Column('enum', {
 		enum: RepairStatus,
 		default: RepairStatus.PENDING,
 	})
-	@Column('bool', {
-		default: true,
+	status: RepairStatus;
+	@Column('varchar', {
+		nullable: false,
 	})
-	status: boolean;
-
-	@ManyToOne(() => motorcycle, (motorcycle) => motorcycle.repairs) //
-	@JoinColumn({ name: 'motorcycleId' })
-	motorcycle: motorcycle;
+	userId: string;
 }

@@ -1,11 +1,11 @@
-import { PostgresDatabase, User, UserRole, UserStatus } from '../../data';
-import bcrypt from 'bcrypt';
-import { CustomError } from '../../domain';
+import { User } from '../../data';
+
+import { CreateUserDTO, CustomError } from '../../domain';
 
 export class UsersService {
 	constructor() {}
 
-	async getAllUsers() {
+	async findAllUsers() {
 		try {
 			return await User.find();
 		} catch (error) {
@@ -27,7 +27,7 @@ export class UsersService {
 		return user; // Devolver el usuario encontrado
 	}
 
-	async createUser(userData: any) {
+	async createUser(data: CreateUserDTO) {
 		const user = new User();
 
 		user.name = userData.name;
@@ -42,7 +42,7 @@ export class UsersService {
 		}
 	}
 
-	async updateUser(id: string, name: string, lastname: string, userData: any) {
+	async updateUser(id: string) {
 		// Buscar el usuario existente por ID
 		const user = await User.findOne({ where: { id } });
 
@@ -51,8 +51,6 @@ export class UsersService {
 		}
 
 		// Actualizar los campos del usuario
-		user.name = name || userData.name || user.name;
-		user.lastname = lastname || userData.lastname || user.lastname;
 
 		try {
 			// Guardar los cambios en la base de datos

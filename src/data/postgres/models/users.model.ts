@@ -5,7 +5,6 @@ import {
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-import { motorcycle } from './modelo.moto';
 
 export enum UserRole {
 	CLIENT = 'client',
@@ -15,8 +14,6 @@ export enum UserRole {
 export enum UserStatus {
 	AVAILABLE = 'available',
 	DISABLED = 'disabled',
-	ACTIVE = 'active',
-	PENDING = 'pending',
 }
 
 @Entity()
@@ -32,12 +29,6 @@ export class User extends BaseEntity {
 
 	@Column('varchar', {
 		length: 80,
-		nullable: false,
-	})
-	lastname: string;
-
-	@Column('varchar', {
-		length: 80,
 		unique: true,
 		nullable: false,
 	})
@@ -47,11 +38,6 @@ export class User extends BaseEntity {
 		nullable: false,
 	})
 	password: string;
-
-	@Column('date', {
-		nullable: false,
-	})
-	birthdate: Date;
 
 	@Column({
 		type: 'enum',
@@ -71,7 +57,4 @@ export class User extends BaseEntity {
 	disable() {
 		this.status = false;
 	}
-
-	@OneToMany(() => motorcycle, (motorcycle) => motorcycle.user)
-	motorcycles: motorcycle[];
 }
