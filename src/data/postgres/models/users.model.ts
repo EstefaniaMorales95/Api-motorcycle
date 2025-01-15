@@ -2,6 +2,7 @@ import {
 	BaseEntity,
 	Column,
 	Entity,
+	FindOperator,
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -39,22 +40,19 @@ export class User extends BaseEntity {
 	})
 	password: string;
 
-	@Column({
-		type: 'enum',
+	@Column('enum', {
 		enum: UserRole,
 		default: UserRole.CLIENT,
 	})
 	role: UserRole;
 
-	@Column({
-		type: 'enum',
+	@Column('enum', {
 		enum: UserStatus,
 		default: UserStatus.AVAILABLE,
 	})
-	@Column()
-	status: boolean;
+	status: UserStatus;
 
 	disable() {
-		this.status = false;
+		this.status = UserStatus.DISABLED;
 	}
 }

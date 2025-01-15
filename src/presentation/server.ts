@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import express, { Router } from 'express';
-import { PostgresDatabase } from '../data';
 
 interface Options {
 	port: number;

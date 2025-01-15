@@ -1,17 +1,18 @@
 import { regularExp } from '../../../config';
+import { UserRole } from '../../../data';
 
 export class CreateUserDTO {
 	constructor(
 		public name: string,
 		public email: string,
 		public password: string,
-		public role: string,
+		public role: UserRole,
 	) {}
 
 	static create(object: { [key: string]: any }): [string?, CreateUserDTO?] {
 		const { name, email, password, role } = object;
 
-		if (!name) return ['Missing id'];
+		if (!name) return ['name is required'];
 		if (!email) return ['Email is required'];
 		if (!regularExp.email.test(email)) return ['Invalid Email'];
 		if (!password) return ['Missing password'];

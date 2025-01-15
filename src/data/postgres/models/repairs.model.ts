@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum RepairStatus {
 	PENDING = 'PENDING',
@@ -6,7 +6,7 @@ export enum RepairStatus {
 	CANCELLED = 'CANCELLED',
 }
 @Entity()
-export class Repair {
+export class Repair extends BaseEntity {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
 

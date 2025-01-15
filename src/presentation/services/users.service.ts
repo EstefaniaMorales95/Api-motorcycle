@@ -1,40 +1,44 @@
-import { User } from '../../data';
+import { User, UserStatus } from '../../data';
 
 import { CreateUserDTO, CustomError } from '../../domain';
+import { UpdateUserDTO } from '../../domain/dtos/users/update-user.dto';
 
 export class UsersService {
-	constructor() {}
-
-	async findAllUsers() {
-		try {
-			return await User.find();
-		} catch (error) {
-			throw CustomError.notFoud('Error finding a user by their id');
-		}
-	}
-
 	async findOne(id: string) {
 		const user = await User.findOne({
 			where: {
-				id,
-				status: true,
+				status: UserStatus.AVAILABLE,
+				id: id,
 			},
 		});
 		if (!user) {
-			throw CustomError.notFoud('User not found'); // Mejor que 'Post not found', ya que se refiere a un usuario
+			throw CustomError.notFoud('User not found');
 		}
 
 		return user; // Devolver el usuario encontrado
 	}
 
-	async createUser(data: CreateUserDTO) {
+	async findAll() {
+		try {
+			const users = await User.find({
+				where: {
+					status: UserStatus.AVAILABLE,
+				},
+			});
+			return users;
+		} catch (error) {
+			throw CustomError.internalServer('Error fetching users');
+		}
+	}
+
+	async create(data: CreateUserDTO) {
 		const user = new User();
 
-		user.name = userData.name;
-		user.email = userData.email;
-		user.password = userData.password;
-		user.role = userData.role;
-		user.status = userData.status;
+		user.name = data.name;
+		user.email = data.email;
+		user.password = data.password;
+		user.role = data.role;
+
 		try {
 			return await user.save();
 		} catch (error) {
@@ -42,43 +46,32 @@ export class UsersService {
 		}
 	}
 
-	async updateUser(id: string) {
-		// Buscar el usuario existente por ID
-		const user = await User.findOne({ where: { id } });
+	async update(id: string, data: UpdateUserDTO) {
+		const user = await this.findOne(id);
 
-		if (!user) {
-			throw CustomError.badRequest(`User with ID ${id} not found`);
-		}
-
-		// Actualizar los campos del usuario
+		user.name = data.name;
+		user.email = data.email;
 
 		try {
-			// Guardar los cambios en la base de datos
-			return await user.save();
+			await user.save();
+			return {
+				message: 'User Updated',
+			};
 		} catch (error) {
-			throw CustomError.unAuthorized('Error updating user');
+			throw CustomError.internalServer('Error updating user');
 		}
 	}
 
-	async disableUser(id: string) {
+	async disable(id: string) {
+		const user = await this.findOne(id);
+
+		user.status = UserStatus.DISABLED;
+
 		try {
-			// Buscar el usuario
-			const user = await this.findOne(id);
-
-			if (!id) {
-				throw CustomError.badRequest(`User with ID ${id} not found`);
-			}
-
-			// Deshabilitar al usuario
-			user.status = false;
-
-			// Guardar cambios
 			await user.save();
-
-			return { message: `User with ID ${id} has been disabled` };
+			return { ok: true };
 		} catch (error) {
-			// Manejo del error
-			throw CustomError.internalServer('Unknown error occurred');
+			throw CustomError.internalServer('Error deleting user');
 		}
 	}
 }
