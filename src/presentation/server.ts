@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import express, { Router } from 'express';
+import helmet from 'helmet';
 
 interface Options {
 	port: number;
@@ -22,6 +23,9 @@ export class Server {
 			// Middleware de configuración
 			this.app.use(express.json());
 			this.app.use(express.urlencoded({ extended: true }));
+
+			this.app.use(helmet());
+
 			this.app.use(this.routes);
 
 			// Arrancar el servidor

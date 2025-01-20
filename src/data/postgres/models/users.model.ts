@@ -1,11 +1,13 @@
 import {
 	BaseEntity,
+	BeforeInsert,
 	Column,
 	Entity,
 	FindOperator,
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
+import { encriptAdapter } from '../../../config';
 
 export enum UserRole {
 	CLIENT = 'client',
@@ -54,5 +56,9 @@ export class User extends BaseEntity {
 
 	disable() {
 		this.status = UserStatus.DISABLED;
+	}
+	@BeforeInsert()
+	encryptedPassword() {
+		this.password = encriptAdapter.hash(this.password);
 	}
 }

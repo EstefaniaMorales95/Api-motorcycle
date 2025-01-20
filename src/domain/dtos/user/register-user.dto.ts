@@ -1,7 +1,7 @@
 import { regularExp } from '../../../config';
 import { UserRole } from '../../../data';
 
-export class CreateUserDTO {
+export class RegisterUserDTO {
 	constructor(
 		public name: string,
 		public email: string,
@@ -9,7 +9,7 @@ export class CreateUserDTO {
 		public role: UserRole,
 	) {}
 
-	static create(object: { [key: string]: any }): [string?, CreateUserDTO?] {
+	static create(object: { [key: string]: any }): [string?, RegisterUserDTO?] {
 		const { name, email, password, role } = object;
 
 		if (!name) return ['Name is required'];
@@ -22,6 +22,6 @@ export class CreateUserDTO {
 			];
 
 		if (!role) return ['Missing role'];
-		return [undefined, new CreateUserDTO(name, email, password, role)];
+		return [undefined, new RegisterUserDTO(name, email, password, role)];
 	}
 }

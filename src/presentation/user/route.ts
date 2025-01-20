@@ -1,15 +1,24 @@
 import { Router } from 'express';
-
-import { UsersService } from '../services/users.service';
+import { UserController } from './controller';
+import { UserService } from '../services/user.service';
+import { EmailService } from '../services/email.service';
+import { envs } from '../../config';
 
 export class UserRoutes {
 	static get routes(): Router {
 		const router = Router();
-		const userService = new UsersService();
-		//const UserController = new UsersController();
 
-		//router.post('/login', UserController.login);
+		const emailService = new EmailService(
+			envs.MAILER_SERVICE,
+			envs.MAILER_EMAIL,
+			envs.MAILER_SECRET_KEY,
+			envs.SEND_EMAIL,
+		);
+		const userService = new UserService(emailService);
+		const userController = new UserController(userService);
 
+		router.post('/login', userController.login);
+		router.post('/register', userController.register);
 		return router;
 	}
 }

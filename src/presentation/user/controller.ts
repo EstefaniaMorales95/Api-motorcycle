@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { CustomError } from '../../domain';
+import { CustomError, LoginUserDTO, RegisterUserDTO } from '../../domain';
 import { UserService } from '../services/user.service';
 
 export class UserController {
@@ -14,15 +14,21 @@ export class UserController {
 	};
 
 	login = (req: Request, res: Response) => {
+		const [error, loginUserDto] = LoginUserDTO.create(req.body);
+
+		if (error) return res.status(422).json({ message: error });
 		this.userService
-			.login(1)
+
+			.login(loginUserDto!)
 			.then((data) => res.status(200).json(data))
 			.catch((error) => this.handleError(error, res));
 	};
 
 	register = (req: Request, res: Response) => {
+		const [error, registerUserDTO] = RegisterUserDTO.create(req.body);
+		if (error) return res.status(422).json({ message: error });
 		this.userService
-			.register(1)
+			.register(registerUserDTO!)
 			.then((data) => res.status(200).json(data))
 			.catch((error) => this.handleError(error, res));
 	};
