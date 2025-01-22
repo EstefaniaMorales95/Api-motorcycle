@@ -30,6 +30,8 @@ export class RepairService {
 
 		repair.date = data.date;
 		repair.userId = data.userId;
+		repair.motorsNumber = data.motorsNumber;
+		repair.description = data.description;
 		try {
 			return await repair.save();
 		} catch (error) {

@@ -40,9 +40,17 @@ export class UsersService {
 		user.role = data.role;
 
 		try {
-			return await user.save();
+			const newUser = await user.save();
+
+			return {
+				id: newUser.id,
+				name: newUser.name,
+				email: newUser.email,
+				role: newUser.role,
+			};
 		} catch (error) {
-			throw CustomError.badRequest('Error creating user');
+			console.log(error);
+			throw CustomError.internalServer('Error creating user');
 		}
 	}
 

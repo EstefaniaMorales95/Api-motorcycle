@@ -3,6 +3,7 @@ import { UserController } from './controller';
 import { UserService } from '../services/user.service';
 import { EmailService } from '../services/email.service';
 import { envs } from '../../config';
+import { uploadSingleFile } from '../../config/upload-files.adapter';
 
 export class UserRoutes {
 	static get routes(): Router {
@@ -18,7 +19,13 @@ export class UserRoutes {
 		const userController = new UserController(userService);
 
 		router.post('/login', userController.login);
-		router.post('/register', userController.register);
+		router.post(
+			'/register',
+			uploadSingleFile('photo'),
+			userController.register,
+		);
+		router.get('/validate-email/:token', userController.validatAccount);
+		router.get('/profile', userController.getProfile);
 		return router;
 	}
 }

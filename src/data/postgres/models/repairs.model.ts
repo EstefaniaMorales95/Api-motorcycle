@@ -14,6 +14,14 @@ export class Repair extends BaseEntity {
 		nullable: false,
 	})
 	date: Date;
+	@Column('varchar', {
+		nullable: false,
+	})
+	motorsNumber: string;
+	@Column('text', {
+		nullable: false,
+	})
+	description: string;
 	@Column('enum', {
 		enum: RepairStatus,
 		default: RepairStatus.PENDING,

@@ -72,8 +72,9 @@ export class UserService {
 	}
 
 	public senEmailValidationLink = async (email: string) => {
-		const link =
-			'https://us02web.zoom.us/rec/play/ixHUHZItT2Y1peRtD1WrUaZ0EuhGOZtT9YqVJue_mQnyVKBwi8rqfxjXAmGTyTlAAqoSQPqazMsPMMKZ.E4tDTJ8MVFmpprKj?canPlayFromShare=true&from=share_recording_detail&continueMode=true&componentName=rec-play&originRequestUrl=https%3A%2F%2Fus02web.zoom.us%2Frec%2Fshare%2FP3NbskW-YxtQgBvbpoYE8swYDCOZYvL2qrku6zyjgDklnKhn76kXl2PFtmKJyFNw.WmUL6ebXN41bYp2I';
+		const token = await JwtAdapter.generateToken({ email });
+		if (!token) throw CustomError.internalServer('Error getting');
+		const link = `https://freckle-wisteria-4f2.notion.site/NODE-GEN-40-15f444f197db8083ae3adb5c2c5ea161 ${token} `;
 		const html = `
 		<h1> Validate your email </h1>
 		<p> Click on the following link to validate your email </p>
@@ -88,4 +89,28 @@ export class UserService {
 
 		return true;
 	};
+
+	validateEmail = async (token: string) => {
+		const payload = await JwtAdapter.validateToken(token);
+		if (!payload) throw CustomError.badRequest('Invalid Token');
+		const { email } = payload as { email: string };
+		if (!email) throw CustomError.internalServer('Email is');
+
+		const user = await User.findOne({ where: { email: email } });
+
+		if (!user) throw CustomError.internalServer('Enail not exist');
+
+		user.status = UserStatus.AVAILABLE;
+
+		try {
+			await user.save();
+			return {
+				message: 'User available',
+			};
+		} catch (error) {
+			throw CustomError.internalServer('Something went very wrong');
+		}
+	};
+
+	async getUserProfile() {}
 }
