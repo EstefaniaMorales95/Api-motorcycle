@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { UsersService } from '../services/users.service';
-import { CreateUserDTO, CustomError } from '../../domain';
+import { CreateUserDTO, CustomError, LoginUserDTO } from '../../domain';
 import { UpdateUserDTO } from '../../domain/dtos/users/update-user.dto';
 
 export class UsersController {
@@ -59,5 +59,24 @@ export class UsersController {
 			.disable(id)
 			.then((data) => res.status(204).json(data))
 			.catch((error: any) => this.handleError(error, res));
+	};
+	loginUser = async (req: Request, res: Response) => {
+		try {
+			const result = LoginUserDTO.login(req.body);
+
+			// Manejar errores
+			if (result.error) {
+				return res.status(400).json({ message: result.error });
+			}
+
+			// Llamar al servicio si todo está correcto
+			const data = await this.userService.login(
+				result.data!.email,
+				result.data!.password,
+			);
+			return res.status(200).json(data);
+		} catch (error) {
+			this.handleError(error, res);
+		}
 	};
 }

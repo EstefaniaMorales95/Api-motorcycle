@@ -12,13 +12,14 @@ export class UsersRoutes {
 		const usersService = new UsersService();
 		const usersController = new UsersController(usersService);
 
+		router.post('/login', usersController.loginUser);
+		router.post('/', usersController.createUser);
+
 		router.use(AuthMiddleware.protect);
 		router.get('/', usersController.findAllUsers);
 		router.get('/:id', usersController.findOneUser); // Usamos ':id' para recibir un parámetro de ID
-		router.post('/', usersController.createUser);
 		router.patch('/:id', usersController.updateUser); // Usamos ':id' para el parámetro de ID
 		router.delete('/:id', usersController.disableUser); // Usamos ':id' para el parámetro de ID
-
 		return router;
 	}
 }
