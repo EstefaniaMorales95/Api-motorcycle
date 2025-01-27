@@ -1,8 +1,16 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+	BaseEntity,
+	Column,
+	Entity,
+	JoinColumn,
+	ManyToOne,
+	PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from './users.model';
 
 export enum RepairStatus {
 	PENDING = 'PENDING',
-	COMPLETED = 'COPLETED',
+	COMPLETED = 'COMPLETED',
 	CANCELLED = 'CANCELLED',
 }
 @Entity()
@@ -31,4 +39,8 @@ export class Repair extends BaseEntity {
 		nullable: false,
 	})
 	userId: string;
+
+	@ManyToOne(() => User, (user) => user.repairs)
+	@JoinColumn({ name: 'userId' })
+	users: User;
 }

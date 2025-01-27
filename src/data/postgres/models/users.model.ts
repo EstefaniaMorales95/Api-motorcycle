@@ -8,6 +8,7 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { encriptAdapter } from '../../../config';
+import { Repair } from './repairs.model';
 
 export enum UserRole {
 	CLIENT = 'client',
@@ -57,8 +58,15 @@ export class User extends BaseEntity {
 	disable() {
 		this.status = UserStatus.DISABLED;
 	}
+	@OneToMany(() => Repair, (repair) => repair.users)
+	repairs: Repair[];
+
 	@BeforeInsert()
-	encryptedPassword() {
-		this.password = encriptAdapter.hash(this.password);
+	async encryptedPassword() {
+		try {
+			this.password = await encriptAdapter.hash(this.password);
+		} catch (error) {
+			throw new Error('Error encrypting password');
+		}
 	}
 }
