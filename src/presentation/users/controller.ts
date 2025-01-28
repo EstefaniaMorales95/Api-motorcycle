@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UsersService } from '../services/users.service';
 import { CreateUserDTO, CustomError, LoginUserDTO } from '../../domain';
 import { UpdateUserDTO } from '../../domain/dtos/users/update-user.dto';
+import { protectAccountOwner } from '../../config/validate-owner';
 
 export class UsersController {
 	constructor(private readonly userService: UsersService) {}
@@ -43,8 +44,13 @@ export class UsersController {
 	updateUser = async (req: Request, res: Response) => {
 		const { id } = req.params;
 		const [error, updateUserDto] = UpdateUserDTO.create(req.body);
+		const sessionUserId = req.body.sessionUserId.id;
 
-		if (error) return res.status(422).json({ message: error });
+		if (!protectAccountOwner(id, sessionUserId)) {
+			return res
+				.status(401)
+				.json({ message: 'You are not the owner of this account' });
+		}
 
 		this.userService
 			.update(id, updateUserDto!)
@@ -54,6 +60,12 @@ export class UsersController {
 
 	disableUser = async (req: Request, res: Response) => {
 		const { id } = req.params;
+		const sessionUserId = req.body.sessionUserId.id;
+		if (!protectAccountOwner(id, sessionUserId)) {
+			return res
+				.status(401)
+				.json({ message: 'You are not the owner of this account' });
+		}
 
 		this.userService
 			.disable(id)

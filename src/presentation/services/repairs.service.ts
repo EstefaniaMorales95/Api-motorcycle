@@ -1,12 +1,24 @@
 import { Repair, RepairStatus } from '../../data/postgres/models/repairs.model';
 import { CreateRepairDTO, CustomError } from '../../domain';
+import { In } from 'typeorm';
 
 export class RepairService {
 	async findAll() {
 		try {
 			return await Repair.find({
 				where: {
-					status: RepairStatus.PENDING,
+					status: In([RepairStatus.PENDING, RepairStatus.COMPLETED]),
+				},
+				relations: {
+					users: true,
+				},
+				select: {
+					users: {
+						id: true,
+						name: true,
+						email: true,
+						role: true,
+					},
 				},
 			});
 		} catch (error) {
